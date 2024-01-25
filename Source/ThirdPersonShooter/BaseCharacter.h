@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class AGun;
+
 UCLASS()
 class THIRDPERSONSHOOTER_API ABaseCharacter : public ACharacter
 {
@@ -31,4 +33,14 @@ protected:
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AGun> GunClass;
+
+	UPROPERTY()
+	AGun* Gun;
+
+private:
+	void OpenFire();
+
 };

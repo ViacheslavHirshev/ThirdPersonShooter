@@ -4,6 +4,7 @@
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
+#include "Gun.h"
 
 
 // Sets default values
@@ -17,6 +18,12 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("weapon_socket"));
+	Gun->SetOwner(this);
 }
 
 // Called every frame
@@ -34,6 +41,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ABaseCharacter::OpenFire);
 }
 
 void ABaseCharacter::MoveForward(float AxisValue)
@@ -44,4 +52,9 @@ void ABaseCharacter::MoveForward(float AxisValue)
 void ABaseCharacter::MoveRight(float AxisValue)
 {
 	AddMovementInput(GetActorRightVector() * AxisValue * UGameplayStatics::GetWorldDeltaSeconds(this) * MovementVelocity);
+}
+
+void ABaseCharacter::OpenFire()
+{
+	Gun->PullTrigger();
 }
