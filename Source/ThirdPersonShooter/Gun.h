@@ -33,6 +33,11 @@ private:
 	class USkeletalMeshComponent* SkeletalMesh;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* MuzzleFlash;
+	UParticleSystem* MuzzleFlashEffect;
 
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* HitEffect;
+
+	UPROPERTY(EditAnywhere)
+	float ShootingDist = 1000.0f;
 };

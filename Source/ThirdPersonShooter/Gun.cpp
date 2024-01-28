@@ -5,6 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AGun::AGun()
@@ -34,5 +35,32 @@ void AGun::Tick(float DeltaTime)
 
 void AGun::PullTrigger()
 {
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, SkeletalMesh, TEXT("MuzzleFlashSocket"));
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, SkeletalMesh, TEXT("MuzzleFlashSocket"));
+
+	APawn* GunOwner = Cast<APawn>(GetOwner());
+	if (GunOwner == nullptr)
+	{
+		return;
+	}
+
+	AController* OwnerController = GunOwner->GetController();
+	if (OwnerController == nullptr)
+	{
+		return;
+	} 
+
+	TUniquePtr<FVector> ViewpointLocation = MakeUnique<FVector>();
+	TUniquePtr<FRotator> ViewpointRotation = MakeUnique<FRotator>();
+	OwnerController->GetPlayerViewPoint(*ViewpointLocation, *ViewpointRotation);
+	TUniquePtr<FVector> BulletEndPoint = MakeUnique<FVector>(*ViewpointLocation + ViewpointRotation->Vector() * ShootingDist);
+	
+	FHitResult HitResult;
+	bool bIsLineTraceSucceed = GetWorld()->LineTraceSingleByChannel(HitResult, *ViewpointLocation, *BulletEndPoint, ECC_GameTraceChannel1);
+		
+	if (bIsLineTraceSucceed)
+	{
+		FVector ShotDirection{ -ViewpointRotation->Vector() };
+		UGameplayStatics::SpawnEmitterAtLocation(this, HitEffect, HitResult.Location, ShotDirection.Rotation());
+	}
+	
 }
