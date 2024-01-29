@@ -27,17 +27,20 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	class USceneComponent* Root;
+	class USceneComponent* Root{ nullptr };
 
 	UPROPERTY(VisibleAnywhere)
-	class USkeletalMeshComponent* SkeletalMesh;
+	class USkeletalMeshComponent* SkeletalMesh{ nullptr };
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* MuzzleFlashEffect;
+	UParticleSystem* MuzzleFlashEffect{ nullptr };
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* HitEffect;
+	UParticleSystem* HitEffect{ nullptr };
 
 	UPROPERTY(EditAnywhere)
-	float ShootingDist = 1000.0f;
+	float ShootingDist{ 1000.0f };
+
+	UPROPERTY(VisibleAnywhere)
+	float InDamage{ 20 };
 };

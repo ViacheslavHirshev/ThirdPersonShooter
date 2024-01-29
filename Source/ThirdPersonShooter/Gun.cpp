@@ -6,6 +6,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DamageEvents.h"
+
 
 // Sets default values
 AGun::AGun()
@@ -49,18 +51,25 @@ void AGun::PullTrigger()
 		return;
 	} 
 
+	//Get location of player's viewpoint
 	TUniquePtr<FVector> ViewpointLocation = MakeUnique<FVector>();
 	TUniquePtr<FRotator> ViewpointRotation = MakeUnique<FRotator>();
 	OwnerController->GetPlayerViewPoint(*ViewpointLocation, *ViewpointRotation);
 	TUniquePtr<FVector> BulletEndPoint = MakeUnique<FVector>(*ViewpointLocation + ViewpointRotation->Vector() * ShootingDist);
 	
+	//Line tracing for shooting
 	FHitResult HitResult;
 	bool bIsLineTraceSucceed = GetWorld()->LineTraceSingleByChannel(HitResult, *ViewpointLocation, *BulletEndPoint, ECC_GameTraceChannel1);
-		
 	if (bIsLineTraceSucceed)
 	{
 		FVector ShotDirection{ -ViewpointRotation->Vector() };
 		UGameplayStatics::SpawnEmitterAtLocation(this, HitEffect, HitResult.Location, ShotDirection.Rotation());
+
+		if (HitResult.GetActor())
+		{
+			FPointDamageEvent PointDamageEvent(InDamage, HitResult, ShotDirection, nullptr);
+			HitResult.GetActor()->TakeDamage(InDamage, PointDamageEvent, OwnerController, this);
+		}
 	}
 	
 }
