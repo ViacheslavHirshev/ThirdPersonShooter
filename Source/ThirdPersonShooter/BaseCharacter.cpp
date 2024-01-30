@@ -53,7 +53,7 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 
 	CurrentHealth -= DamageApplied;
 
-	UE_LOG(LogTemp, Warning, TEXT("Taking damage! Current health is: %f"), CurrentHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Current health is: %f"), CurrentHealth);
 
 	return DamageApplied;
 }
