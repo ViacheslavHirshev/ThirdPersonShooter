@@ -22,4 +22,11 @@ public:
 
 private:
 	APawn* AimingTarget{ nullptr };
+
+	UPROPERTY(EditAnywhere)
+	class UBehaviorTree* AIBehaviorTree;
+
+	void TrackPlayer();
+	void Patroling();
+	
 };
